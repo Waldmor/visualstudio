@@ -1,0 +1,108 @@
+Public Class Form6
+    Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
+        Me.Close()
+    End Sub
+
+    Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+        DataGridView1.DataSource = DBNull.Value
+    End Sub
+
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+        Dim c As New OleDb.OleDbConnection
+        c.ConnectionString = "Provider=Microsoft.Jet.OLedb.4.0;Data Source=C:\Users\atese\OneDrive\Masaüstü\Ödevler\Görsel Programlama 1\Proje\veritabani.mdb"
+        Dim adap As New OleDb.OleDbDataAdapter
+        Dim dats As New DataSet
+        c.Open()
+        adap = New OleDb.OleDbDataAdapter("select * from Tablo1", c)
+        adap.Fill(dats, "Tablo1")
+        Dim yenitablo As New DataTable
+        dats.Tables.Add(yenitablo)
+        BindingSource1.DataSource = dats
+        BindingSource1.DataMember = dats.Tables(0).TableName
+        DataGridView1.DataSource = BindingSource1
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+        PrintPreviewDialog1.Document = PrintDocument1
+        PrintPreviewDialog1.ShowDialog()
+    End Sub
+
+    Private Sub PrintPreviewDialog1_Load(sender As Object, e As EventArgs) Handles PrintPreviewDialog1.Load
+
+    End Sub
+
+    Private Sub PrintDocument1_PrintPage(sender As Object, e As Printing.PrintPageEventArgs) Handles PrintDocument1.PrintPage
+        Dim I, b As Integer
+
+        Dim printFont As New System.Drawing.Font("Microsoft Sans Serif", 16, System.Drawing.FontStyle.Bold)
+        Dim printFont1 As New System.Drawing.Font("Microsoft Sans Serif", 10, System.Drawing.FontStyle.Bold)
+        PrintDocument1.DocumentName = "'print dokumanının adını tanımlıyorum."
+        Dim leftMargin As Integer = 50 'sol margin
+        Dim topMargin As Integer = 50 'sağ margin
+        Dim linesPerPage As Integer = 0
+        Dim yPos As Single = 0
+        Dim count As Integer = 0
+        Dim line As String = Nothing  'bunu bir satıra yazdırılacak değerleri atamak için kullanacağım
+        linesPerPage = e.MarginBounds.Height / printFont.GetHeight(e.Graphics)
+        linesPerPage += 4
+        PrintDocument1.DefaultPageSettings.Landscape = False 'sayfanın dikey olması için
+
+
+        Dim c As New OleDb.OleDbConnection
+        c.ConnectionString = "Provider=Microsoft.Jet.OLedb.4.0;Data Source=C:\Users\atese\OneDrive\Masaüstü\Ödevler\Görsel Programlama 1\Proje\veritabani.mdb"
+        Dim adap As New OleDb.OleDbDataAdapter
+        Dim dats As New DataSet
+        c.Open()
+        adap = New OleDb.OleDbDataAdapter("select * from Tablo1", c)
+        adap.Fill(dats, "Tablo1")
+
+        Dim dt As New DataSet
+        dt = dats
+        Dim a As Long
+        a = dt.Tables("Tablo1").Rows.Count
+
+
+        line = "KayitNo "
+        e.Graphics.DrawString(line, printFont1, Brushes.Black, 30, 100, New StringFormat()) : line = Nothing
+        line = "AdSoyad"
+        e.Graphics.DrawString(line, printFont1, Brushes.Black, 165, 100, New StringFormat()) : line = Nothing
+        line = "Alani"
+        e.Graphics.DrawString(line, printFont1, Brushes.Black, 280, 100, New StringFormat()) : line = Nothing
+        line = "Cinsiyet"
+        e.Graphics.DrawString(line, printFont1, Brushes.Black, 400, 100, New StringFormat()) : line = Nothing
+        line = "BasvuruTarihi"
+        e.Graphics.DrawString(line, printFont1, Brushes.Black, 535, 100, New StringFormat()) : line = Nothing
+        'line = "Poliklinik"
+        'e.Graphics.DrawString(line, printFont1, Brushes.Black, 630, 100, New StringFormat()) : line = Nothing
+        'line = "Giriş Tarihi"
+        'e.Graphics.DrawString(line, printFont1, Brushes.Black, 745, 100, New StringFormat()) : line = Nothing
+        line = "___________________________________________________________________________________________________"
+        e.Graphics.DrawString(line, printFont1, Brushes.Black, 30, 120, New StringFormat()) : line = Nothing
+
+
+        For I = 0 To a - 1
+            Dim dr As DataRow = dats.Tables("Tablo1").Rows(I)
+
+            line = dr("KayitNo").ToString()
+            e.Graphics.DrawString(line, printFont1, Brushes.Blue, 30, 140 + b, New StringFormat()) : line = Nothing
+            line = dr("AdSoyad").ToString()
+            e.Graphics.DrawString(line, printFont1, Brushes.Blue, 165, 140 + b, New StringFormat()) : line = Nothing
+            line = dr("Alani").ToString()
+            e.Graphics.DrawString(line, printFont1, Brushes.Blue, 280, 140 + b, New StringFormat()) : line = Nothing
+            line = dr("Cinsiyet").ToString()
+            e.Graphics.DrawString(line, printFont1, Brushes.Blue, 400, 140 + b, New StringFormat()) : line = Nothing
+            'line = dr("Cinsiyet").ToString()
+            'e.Graphics.DrawString(line, printFont1, Brushes.Blue, 535, 140 + b, New StringFormat()) : line = Nothing
+            line = dr("BasvuruTarihi").ToString()
+            e.Graphics.DrawString(line, printFont1, Brushes.Blue, 630, 140 + b, New StringFormat()) : line = Nothing
+            'line = dr("GirisTarihi").ToString()
+            'e.Graphics.DrawString(line, printFont1, Brushes.Blue, 745, 140 + b, New StringFormat()) : line = Nothing
+            b = b + 15
+        Next I
+
+        line = "___________________________________________________________________________________________________"
+        e.Graphics.DrawString(line, printFont1, Brushes.Black, 30, 140 + b, New StringFormat()) : line = Nothing
+
+        c.Close()
+    End Sub
+End Class
