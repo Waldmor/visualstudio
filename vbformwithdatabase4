@@ -1,0 +1,75 @@
+Public Class Form4
+    Dim fileName As String
+    Sub Temizle()
+        TextBox2.Text = ""
+        TextBox1.Text = ""
+        TextBox3.Text = ""
+        ComboBox1.Text = ""
+        RadioButton1.Checked = True
+        If Not (PictureBox1.Image Is Nothing) Then
+            PictureBox1.Image.Dispose()
+            PictureBox1.Image = Nothing
+            fileName = ""
+        End If
+        TextBox2.Focus()
+    End Sub
+
+    Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+        Temizle()
+    End Sub
+
+    Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
+        Me.Close()
+    End Sub
+
+    Private Sub Form3_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
+    End Sub
+
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+        Dim c As New OleDb.OleDbConnection
+        c.ConnectionString = "Provider=Microsoft.Jet.OLedb.4.0;Data Source=C:\Users\atese\OneDrive\Masaüstü\Ödevler\Görsel Programlama 1\Proje\veritabani.mdb"
+        Dim adap As New OleDb.OleDbDataAdapter
+        Dim dats As New DataSet
+        Try
+            c.Open()
+            adap = New OleDb.OleDbDataAdapter("select * from Tablo1 where KayitNo='" + TextBox2.Text + "'", c)
+            adap.Fill(dats, "Tablo1")
+            Dim dr As DataRow = dats.Tables("Tablo1").Rows(0)
+            TextBox1.Text = dr("AdSoyad").ToString()
+            TextBox3.Text = dr("BasvuruTarihi").ToString()
+            ComboBox1.Text = dr("Alani").ToString()
+            If dr("Cinsiyet").ToString() = "Erkek" Then
+                RadioButton1.Checked = True
+            Else
+                RadioButton2.Checked = True
+            End If
+            PictureBox1.Image = System.Drawing.Bitmap.FromFile(dr("Fotograf").ToString())
+        Catch
+            MessageBox.Show("Aranılan kayıt bulunamadı")
+
+        Finally
+            c.Close()
+        End Try
+    End Sub
+
+    Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button4.Click
+        Dim A As Integer
+        A = MsgBox("Kayıt Silinsin mi?", 32 + 4 + 256)
+        If A = 6 Then
+            Dim c As New OleDb.OleDbConnection
+            c.ConnectionString = "Provider=Microsoft.Jet.OLedb.4.0;Data Source=C:\Users\atese\OneDrive\Masaüstü\Ödevler\Görsel Programlama 1\Proje\veritabani.mdb"
+            c.Open()
+            Try
+                Dim komut As OleDb.OleDbCommand = New OleDb.OleDbCommand("delete from Tablo1 where KayitNo='" + TextBox2.Text + "'", c)
+                komut.ExecuteNonQuery()
+                c.Close()
+            Catch ex As Exception
+                MessageBox.Show("hata= " + ex.Message)
+            End Try
+        End If
+        Temizle()
+    End Sub
+
+
+End Class
