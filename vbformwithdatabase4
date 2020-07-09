@@ -71,5 +71,4 @@ Public Class Form4
         Temizle()
     End Sub
 
-
 End Class
