@@ -1,0 +1,105 @@
+Public Class Form5
+    Dim fileName, d As String
+    Dim b As Integer
+
+    Sub Temizle()
+        TextBox2.Text = ""
+        TextBox1.Text = ""
+        TextBox3.Text = ""
+        ComboBox1.Text = ""
+        RadioButton1.Checked = True
+        If Not (PictureBox1.Image Is Nothing) Then
+            PictureBox1.Image.Dispose()
+            PictureBox1.Image = Nothing
+            fileName = ""
+        End If
+        TextBox2.Focus()
+
+    End Sub
+
+    Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+        Temizle()
+    End Sub
+
+    Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
+        Me.Close()
+    End Sub
+
+    Private Sub Form3_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
+    End Sub
+
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click, Button5.Click
+        Dim c As New OleDb.OleDbConnection
+        c.ConnectionString = "Provider=Microsoft.Jet.OLedb.4.0;Data Source=C:\Users\atese\OneDrive\Masaüstü\Ödevler\Görsel Programlama 1\Proje\veritabani.mdb"
+        Dim adap As New OleDb.OleDbDataAdapter
+        Dim dats As New DataSet
+        Try
+            c.Open()
+            adap = New OleDb.OleDbDataAdapter("select * from Tablo1 where KayitNo='" + TextBox2.Text + "'", c)
+            adap.Fill(dats, "Tablo1")
+            Dim dr As DataRow = dats.Tables("Tablo1").Rows(0)
+            TextBox1.Text = dr("AdSoyad").ToString()
+            TextBox3.Text = dr("BasvuruTarihi").ToString()
+            ComboBox1.Text = dr("Alani").ToString()
+            If dr("Cinsiyet").ToString() = "Erkek" Then
+                RadioButton1.Checked = True
+            Else
+                RadioButton2.Checked = True
+            End If
+            d = dr("Fotograf").ToString()
+            PictureBox1.Image = System.Drawing.Bitmap.FromFile(dr("Fotograf").ToString())
+        Catch
+            MessageBox.Show("Aranılan kayıt bulunamadı")
+            Temizle()
+        Finally
+            c.Close()
+        End Try
+
+
+    End Sub
+
+    Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button4.Click
+        Dim a As String
+        Dim c As New OleDb.OleDbConnection
+        c.ConnectionString = "Provider=Microsoft.Jet.OLedb.4.0;Data Source=C:\Users\atese\OneDrive\Masaüstü\Ödevler\Görsel Programlama 1\Proje\veritabani.mdb"
+        Dim adap As New OleDb.OleDbDataAdapter
+        Dim dats As New DataSet
+        c.Open()
+        If RadioButton1.Checked = True Then
+            a = "Erkek"
+        Else
+            a = "Kadın"
+        End If
+        If b <> 1 Then
+            fileName = d
+
+        End If
+        'Dim sql As String = "KayitNo='" + TextBox2.Text + "',AdSoyad='" + TextBox1.Text + "',Alani='" + ComboBox1.Text + "',='" + TextBox3.Text + "',Cinsiyet='" + a + "',Fotograf='" + fileName + "'"
+        'Dim komut As OleDb.OleDbCommand = New OleDb.OleDbCommand("update Tablo1 set " + sql + " where KayitNo='" + TextBox2.Text + "'", c)
+        Dim sql As String = "AdSoyad='" + TextBox1.Text + "',Cinsiyet='" + d + "',Fotograf='" + fileName + "',BasvuruTarihi='" + TextBox3.Text + "'"
+
+        Dim komut As OleDb.OleDbCommand = New OleDb.OleDbCommand("update Tablo1 set " + sql + " where AdSoyad='" + TextBox1.Text + "'", c)
+
+
+
+
+
+        komut.ExecuteNonQuery()
+        c.Close()
+        Temizle()
+    End Sub
+
+    Private Sub Button5_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button5.Click
+        On Error Resume Next
+        Dim Op As New OpenFileDialog
+
+        If (Op.ShowDialog(Me) = System.Windows.Forms.DialogResult.OK) Then
+            fileName = Op.FileName
+            PictureBox1.Image = System.Drawing.Bitmap.FromFile(fileName)
+            b = 1
+        End If
+
+    End Sub
+
+End Class
