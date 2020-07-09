@@ -1,0 +1,60 @@
+Public Class Form2
+    Dim fileName As String
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+        Dim a As String
+        Dim c As New OleDb.OleDbConnection
+        c.ConnectionString = "Provider=Microsoft.Jet.OLedb.4.0;Data Source=C:\Users\atese\OneDrive\Masaüstü\Ödevler\Görsel Programlama 1\Proje\veritabani.mdb"
+        Dim adap As New OleDb.OleDbDataAdapter
+        Dim dats As New DataSet
+        c.Open()
+        If RadioButton1.Checked = True Then
+            a = "Erkek"
+        Else
+            a = "Kadın"
+        End If
+
+
+        Dim komut As OleDb.OleDbCommand = New OleDb.OleDbCommand("insert into Tablo1 values('" + TextBox2.Text + "','" + TextBox1.Text + "','" + a + "','" + TextBox3.Text + "','" + ComboBox1.Text + "','" + fileName + "')", c)
+        komut.ExecuteNonQuery()
+
+        c.Close()
+        Temizle()
+
+
+    End Sub
+    Sub Temizle()
+        TextBox1.Text = ""
+        TextBox2.Text = ""
+        TextBox3.Text = ""
+        ComboBox1.Text = ""
+        RadioButton1.Checked = True
+        If Not (PictureBox1.Image Is Nothing) Then
+            PictureBox1.Image.Dispose()
+            PictureBox1.Image = Nothing
+            fileName = ""
+        End If
+        TextBox1.Focus()
+
+    End Sub
+
+    Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+        Temizle()
+    End Sub
+
+    Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
+        Me.Close()
+    End Sub
+
+    Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button4.Click
+        On Error Resume Next
+        Dim Op As New OpenFileDialog
+
+        If (Op.ShowDialog(Me) = System.Windows.Forms.DialogResult.OK) Then
+            fileName = Op.FileName
+            PictureBox1.Image = System.Drawing.Bitmap.FromFile(fileName)
+            '
+        End If
+
+    End Sub
+
+End Class
